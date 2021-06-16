@@ -1,0 +1,7 @@
+name: TheBridge
+main: com.leo.thebridge.Main
+author: Leonardo
+version: 1.0BETA
+commands:
+  entrar:
+    description: Join to a game.
