@@ -10,11 +10,11 @@ import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.GameState;
 import com.leo.thebridge.utils.Colorize;
 
-public class JoinCommand implements CommandExecutor {
+public class BasicCommands implements CommandExecutor {
 	
 	private GameManager gameManager;
 	
-	public JoinCommand(GameManager gameManager) {
+	public BasicCommands(GameManager gameManager) {
 		this.gameManager = gameManager;
 	}
 	
@@ -25,15 +25,20 @@ public class JoinCommand implements CommandExecutor {
 		if (command.getName().equalsIgnoreCase("entrar")) {
 			if (gameManager.isPlayerPlaying(player)) {
 				player.sendMessage(Colorize.colorize("§cVocê já está em uma partida."));
-			} else gameManager.handleJoin(player); 
+				return true;
+			} else {
+				gameManager.handleJoin(player);
+				return true;
+			}
 			
+		// temporary	
 		} else if (command.getName().equals("forcestart")) {
 			if (gameManager.isPlayerPlaying(player)) {
 				Game game = gameManager.getGameFromPlayer(player);
-				gameManager.setGameState(game,  GameState.STARTING);
+				gameManager.setGameState(game, GameState.STARTING);
+				return true;
 			}
-			
-			
+
 		}
 		
 		

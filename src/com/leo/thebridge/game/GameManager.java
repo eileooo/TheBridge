@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
 import com.leo.thebridge.tasks.StartingGameTask;
-import com.leo.thebridge.utils.Colorize;
 import com.leo.thebridge.utils.Randomize;
 
 import java.util.ArrayList;	
