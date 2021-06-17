@@ -9,10 +9,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
-import com.leo.thebridge.tasks.StartingGameTask;
+import com.leo.thebridge.utils.Colorize;
 import com.leo.thebridge.utils.Randomize;
 
 import java.util.ArrayList;	
+
 
 public class GameManager {
 
@@ -42,29 +43,61 @@ public class GameManager {
 			// by default the game state is waiting
 			Game game = new Game(Randomize.getRandomID(), this.getRandomArena());
 			game.addPlayer(player);
-			this.addGame(game);
 			setGameState(game, GameState.WAITING);
+			this.addGame(game);
+			
 		} else {
 			
+			Game game = joiningGame.get();
+			
+			this.games.remove(game);
 			// debug
 			Bukkit.getServer().broadcastMessage("§eUm jogo foi encontrado, aguarde.");
 			
-			joiningGame.get().addPlayer(player);
+			game.addPlayer(player);
 			
-			if (joiningGame.get().getPlayersCount() == 2) {
-				setGameState(joiningGame.get(), GameState.STARTING);
+			if (game.getPlayersCount() == 2) {
+				setGameState(game, GameState.STARTING);
 			}
+			
+			this.games.add(game);
 		}
 	}
 	
+	public void handleQuit(Player player) {
+		Game game = getGameFromPlayer(player);
+		game.removePlayer(player);
+		
+		if (game.getPlayersCount() == 1) {
+			setGameState(game, GameState.WAITING);
+			Bukkit.getServer().broadcastMessage("y");
+		} else if (game.getPlayersCount() == 0) {
+			setGameState(game, GameState.BLANK);
+			Bukkit.getServer().broadcastMessage("x");
+		}
+	
+		// todo: give win if there's another player
+		// set state to finished
+		// teleport resting player to the lobby
+	}
+	
 	public void setGameState(Game game, GameState state) {
+		
+		Bukkit.getServer().broadcastMessage(Colorize.colorize("§7" + game.getId() + " §ehave his state changed to §7" + state.toString()));
+		
 		switch(state) {
 		case BLANK:
 			break;
 		case WAITING:
 			break;
 		case STARTING:
-			new StartingGameTask(this, game).runTaskTimer(plugin, 0, 20);
+			game.broadcast(" ");
+			game.broadcast("§aGame starting!");
+			game.broadcast(" ");
+			
+			game.getPlayers().forEach(player -> {
+				player.teleport(game.getArena().getLocationOne());
+			});
 			break;
 		case ACTIVE:
 			game.broadcast("§cComeçou!");

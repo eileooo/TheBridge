@@ -37,6 +37,8 @@ public class BasicCommands implements CommandExecutor {
 				Game game = gameManager.getGameFromPlayer(player);
 				gameManager.setGameState(game, GameState.STARTING);
 				return true;
+			} else {
+				player.sendMessage(Colorize.colorize("§cVocê não está jogando!"));
 			}
 
 		}

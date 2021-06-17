@@ -3,6 +3,7 @@ package com.leo.thebridge.game;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -21,9 +22,18 @@ public class Game {
 	
 	public Game(String id, Arena arena) {
 		this.id = id;
-		this.gameState = GameState.BLANK;
+		this.gameState = setBlank();
 		this.players = new ArrayList<Player>();
 		this.arena = arena;
+		
+		Bukkit.getServer().broadcastMessage("A new game is being crated §7" + id);
+	}
+	
+	public GameState setBlank() {
+		Bukkit.getServer().broadcastMessage("DAMN IT");
+		
+		return GameState.BLANK;
+
 	}
 	
 	public String getId() {
@@ -39,12 +49,18 @@ public class Game {
 	}
 	
 	public void addPlayer(Player player) {
+		player.teleport(this.getArena().getLocationOne());
 		this.players.add(player);
 
 		player.sendMessage(Colorize.colorize("§8Enviando para " + this.getId() + " [" + this.getArena().getName() + "]"));
 		broadcast(Colorize.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
 		
-		player.teleport(this.getArena().getLocationOne());
+	}
+	
+	public void removePlayer(Player player) {
+		broadcast(Colorize.colorize("§7" + player.getName() + " §cabandonou a partida."));
+		this.players.remove(player);
+
 	}
 	
 	public int getPlayersCount() {
@@ -52,7 +68,7 @@ public class Game {
 	}
 	
 	public GameState getGameState() {
-		return gameState;
+		return this.gameState;
 	}
 	
 	public void broadcast(String message) {
