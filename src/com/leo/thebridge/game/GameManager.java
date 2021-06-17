@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
+import com.leo.thebridge.tasks.StartingGameTask;
 import com.leo.thebridge.utils.Colorize;
 import com.leo.thebridge.utils.Randomize;
 
@@ -43,7 +44,7 @@ public class GameManager {
 			Game game = new Game(Randomize.getRandomID(), this.getRandomArena());
 			game.addPlayer(player);
 			this.addGame(game);
-
+			setGameState(game, GameState.WAITING);
 		} else {
 			
 			// debug
@@ -59,13 +60,15 @@ public class GameManager {
 	
 	public void setGameState(Game game, GameState state) {
 		switch(state) {
+		case BLANK:
+			break;
 		case WAITING:
-			game.broadcast(Colorize.colorize("§cAguardando um jogador..."));
 			break;
 		case STARTING:
-			
+			new StartingGameTask(this, game).runTaskTimer(plugin, 0, 20);
 			break;
 		case ACTIVE:
+			game.broadcast("§cComeçou!");
 			break;
 		case FINISHED: 
 			break;
@@ -81,6 +84,14 @@ public class GameManager {
 		
 		return false;
 		
+	}
+	
+	public Game getGameFromPlayer(Player player) {
+		Stream<Game> possibleGame = this.games.stream().filter(game -> {
+			return game.getPlayers().contains(player);
+		});
+		
+		return possibleGame.findFirst().get();
 	}
 	
 	public void addGame(Game game) {

@@ -3,9 +3,14 @@ package com.leo.thebridge.game;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.utils.Colorize;
+
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 
 public class Game {
 
@@ -16,7 +21,7 @@ public class Game {
 	
 	public Game(String id, Arena arena) {
 		this.id = id;
-		this.gameState = GameState.WAITING;
+		this.gameState = GameState.BLANK;
 		this.players = new ArrayList<Player>();
 		this.arena = arena;
 	}
@@ -54,4 +59,22 @@ public class Game {
 		players.forEach((player) -> player.sendMessage(message));
 	}
 	
+	public void sendActionBar(String message) {
+        PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte)2);
+        players.forEach(player -> {
+        	((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        });
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void sendTitle(String title, String subTitle) {
+		players.forEach(player -> player.sendTitle(title, subTitle));
+	}
+	
+	public void playSound(Sound sound) {
+		players.forEach(player -> {
+			player.playSound(player.getLocation(), sound, 1, 1);
+		});
+	}
+		
 }

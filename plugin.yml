@@ -5,3 +5,5 @@ version: 1.0BETA
 commands:
   entrar:
     description: Join to a game.
+  forcestart:
+    description: Force start.

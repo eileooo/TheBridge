@@ -3,6 +3,7 @@ package com.leo.thebridge;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.leo.thebridge.commands.JoinCommand;
 import com.leo.thebridge.configuration.Configuration;
 import com.leo.thebridge.game.GameManager;
+import com.leo.thebridge.listeners.SimpleListeners;
 
 public class Main extends JavaPlugin{
 	
@@ -26,6 +28,8 @@ public class Main extends JavaPlugin{
 		this.gameManager = new GameManager(this);
 		
 		this.getCommand("entrar").setExecutor(new JoinCommand(gameManager));
+		this.getCommand("forcestart").setExecutor(new JoinCommand(gameManager));
+		Bukkit.getPluginManager().registerEvents(new SimpleListeners(gameManager), this);
 		
 	}
 	

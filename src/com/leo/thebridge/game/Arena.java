@@ -11,22 +11,17 @@ public class Arena {
 	private Location locationOne;
 	private Location locationTwo;
 	
-	public Arena(String name, 
-			World world, 
-			Location locationOne, 
-			Location locationTwo) {
-		//this.location = location;
+	public Arena(String name,  
+			World world, Location locationOne, Location locationTwo) {
 		this.name = name;
 		this.world = world;
 		this.locationOne = locationOne;
 		this.locationTwo = locationTwo;
+
+		applyGameRules();
 		
 	}
 	
-	/* public Location getLocation() {
-		return location;
-	} */ 
-
 	public String getName() {
 		return name;
 	}
@@ -41,6 +36,12 @@ public class Arena {
 	
 	public Location getLocationTwo() {
 		return locationTwo;
+	}
+	
+	private void applyGameRules() {
+		world.setGameRuleValue("doDayLightCycle", "false");
+		world.setGameRuleValue("doMobSpawning", "false");
+		world.setGameRuleValue("doWeatherCycle", "false");
 	}
 	
 
