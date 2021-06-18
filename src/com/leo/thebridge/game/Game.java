@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import com.leo.thebridge.tasks.GameTasker;
 import com.leo.thebridge.utils.Colorize;
 
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -16,17 +17,25 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 public class Game {
 
 	private List<Player> players;
-	private Arena arena;
+	// private Arena arena;
 	private String id;
 	private GameState gameState;
 	
-	public Game(String id, Arena arena) {
+	private GameTasker gameTasker;
+	
+	private VirtualArena virtualArena;
+	
+	public Game(String id, VirtualArena arena) {
 		this.id = id;
 		this.gameState = setBlank();
 		this.players = new ArrayList<Player>();
-		this.arena = arena;
+		// this.arena = arena;
+		
+		this.gameTasker = new GameTasker(this);
 		
 		Bukkit.getServer().broadcastMessage("A new game is being crated §7" + id);
+		
+		this.virtualArena = arena;
 	}
 	
 	public GameState setBlank() {
@@ -44,15 +53,20 @@ public class Game {
 		return this.players;
 	}
 	
-	public Arena getArena() {
+	/* public Arena getArena() {
 		return arena;
+	} */
+	
+	public VirtualArena getVirtualArena() {
+		return virtualArena;
 	}
 	
 	public void addPlayer(Player player) {
-		player.teleport(this.getArena().getLocationOne());
+		//player.teleport(this.getArena().getLocationOne());
+		player.teleport(this.getVirtualArena().getLocationOne());
 		this.players.add(player);
 
-		player.sendMessage(Colorize.colorize("§8Enviando para " + this.getId() + " [" + this.getArena().getName() + "]"));
+		player.sendMessage(Colorize.colorize("§8Enviando para " + this.getId() + " [" + this.getVirtualArena().getName() + "]"));
 		broadcast(Colorize.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
 		
 	}

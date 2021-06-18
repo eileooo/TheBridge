@@ -22,6 +22,9 @@ public class Arena {
 		
 	}
 	
+	public Arena(World world) {
+		this.world = world;
+	}
 	public String getName() {
 		return name;
 	}

@@ -6,27 +6,47 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
 import com.leo.thebridge.utils.Colorize;
 import com.leo.thebridge.utils.Randomize;
 
-import java.util.ArrayList;	
+import net.elicodes.vw.developers.WorldAPI;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;	
 
 
 public class GameManager {
 
 	private List<Game> games;
-	private List<Arena> arenas;
+	// private List<Arena> arenas;
 	private Main plugin;
+	
+	private List<String> arenas;
 	
 	public GameManager(Main plugin) {
 		this.plugin = plugin;
 		this.games = new ArrayList<Game>();
-		this.arenas = new ArrayList<Arena>();
+		// this.arenas = new ArrayList<Arena>();
 		
-		this.arenas = plugin.getConfiguration().loadArenas();
+		//this.arenas = plugin.getConfiguration().loadArenas();
+		
+		this.arenas = Arrays.asList("fire");
+	}
+	
+	public List<Arena> loadVirtualArenas() {
+		ArrayList<Arena> worlds = new ArrayList<>();
+		World virtualWorld = WorldAPI.createVirtualWorldWithSchematic("fire", new File(plugin.getDataFolder(), "fire.schematic"));
+		
+		worlds.add(new Arena(virtualWorld));
+		
+		return worlds;
+				
+				
 	}
 	
 	public void handleJoin(Player player) {
@@ -41,7 +61,9 @@ public class GameManager {
 			Bukkit.getServer().broadcastMessage("§eNenhum jogo encontrado, aguarde.");
 
 			// by default the game state is waiting
-			Game game = new Game(Randomize.getRandomID(), this.getRandomArena());
+			VirtualArena virtualArena = new VirtualArena("Fire", new File(plugin.getDataFolder(), "fire.schematic"));
+			Game game = new Game(Randomize.getRandomID(), virtualArena);
+			
 			game.addPlayer(player);
 			setGameState(game, GameState.WAITING);
 			this.addGame(game);
@@ -76,6 +98,7 @@ public class GameManager {
 			Bukkit.getServer().broadcastMessage("x");
 		}
 	
+		
 		// todo: give win if there's another player
 		// set state to finished
 		// teleport resting player to the lobby
@@ -96,7 +119,7 @@ public class GameManager {
 			game.broadcast(" ");
 			
 			game.getPlayers().forEach(player -> {
-				player.teleport(game.getArena().getLocationOne());
+				player.teleport(game.getVirtualArena().getLocationOne());
 			});
 			break;
 		case ACTIVE:
@@ -130,11 +153,12 @@ public class GameManager {
 		this.games.add(game);
 	}
 
-	public List<Arena> getArenas() {
+	public List<String> getArenas() {
 		return arenas;
 	}
 	
-	public Arena getRandomArena() {
+		
+	public String getRandomArena() {
 		return this.arenas.get(new Random().nextInt(this.arenas.size()));
 	}
 	

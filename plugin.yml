@@ -2,6 +2,7 @@ name: TheBridge
 main: com.leo.thebridge.Main
 author: Leonardo
 version: 1.0BETA
+dependencies: [VirtualWorldsAPI]
 commands:
   entrar:
     description: Join to a game.
