@@ -3,8 +3,8 @@ package com.leo.thebridge.listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.leo.thebridge.game.GameManager;
 public class QuitListeners implements Listener {
@@ -21,8 +21,16 @@ public class QuitListeners implements Listener {
 		
 		if (gameManager.isPlayerPlaying(player)) {
 			gameManager.handleQuit(player);
-			
 		}
 	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		if (gameManager.isPlayerPlaying(player)) {
+			gameManager.handleQuit(player);
+		}
+	}
+	
 	
 }

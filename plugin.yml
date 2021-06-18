@@ -8,3 +8,5 @@ commands:
     description: Join to a game.
   forcestart:
     description: Force start.
+  arena:
+    description: debug purpouses.

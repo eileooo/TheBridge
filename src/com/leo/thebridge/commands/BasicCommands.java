@@ -1,5 +1,8 @@
 package com.leo.thebridge.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,7 +11,7 @@ import org.bukkit.entity.Player;
 import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.GameState;
-import com.leo.thebridge.utils.Colorize;
+import com.leo.thebridge.utils.Utils;
 
 public class BasicCommands implements CommandExecutor {
 	
@@ -24,7 +27,7 @@ public class BasicCommands implements CommandExecutor {
 		
 		if (command.getName().equalsIgnoreCase("entrar")) {
 			if (gameManager.isPlayerPlaying(player)) {
-				player.sendMessage(Colorize.colorize("§cVocê já está em uma partida."));
+				player.sendMessage(Utils.colorize("§cVocê já está em uma partida."));
 				return true;
 			} else {
 				gameManager.handleJoin(player);
@@ -38,9 +41,13 @@ public class BasicCommands implements CommandExecutor {
 				gameManager.setGameState(game, GameState.STARTING);
 				return true;
 			} else {
-				player.sendMessage(Colorize.colorize("§cVocê não está jogando!"));
+				player.sendMessage(Utils.colorize("§cVocê não está jogando!"));
 			}
 
+		} else if (command.getName().equals("arena")) {
+			World arena = Bukkit.getWorld("arena");
+			
+			player.teleport(new Location(arena, 1567, 73, 1261));
 		}
 		
 		

@@ -6,16 +6,11 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
-import com.leo.thebridge.utils.Colorize;
-import com.leo.thebridge.utils.Randomize;
+import com.leo.thebridge.utils.Utils;
 
-import net.elicodes.vw.developers.WorldAPI;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;	
 
@@ -31,22 +26,13 @@ public class GameManager {
 	public GameManager(Main plugin) {
 		this.plugin = plugin;
 		this.games = new ArrayList<Game>();
-		// this.arenas = new ArrayList<Arena>();
-		
-		//this.arenas = plugin.getConfiguration().loadArenas();
 		
 		this.arenas = Arrays.asList("fire");
 	}
 	
-	public List<Arena> loadVirtualArenas() {
-		ArrayList<Arena> worlds = new ArrayList<>();
-		World virtualWorld = WorldAPI.createVirtualWorldWithSchematic("fire", new File(plugin.getDataFolder(), "fire.schematic"));
-		
-		worlds.add(new Arena(virtualWorld));
-		
-		return worlds;
-				
-				
+	public List<VirtualArena> loadVirtualArenas() {
+		ArrayList<VirtualArena> worlds = new ArrayList<>();
+		return worlds;			
 	}
 	
 	public void handleJoin(Player player) {
@@ -61,8 +47,8 @@ public class GameManager {
 			Bukkit.getServer().broadcastMessage("§eNenhum jogo encontrado, aguarde.");
 
 			// by default the game state is waiting
-			VirtualArena virtualArena = new VirtualArena("Fire", new File(plugin.getDataFolder(), "fire.schematic"));
-			Game game = new Game(Randomize.getRandomID(), virtualArena);
+			VirtualArena virtualArena = new VirtualArena("Fire", plugin.getSchematicFile());
+			Game game = new Game(Utils.getRandomID(), virtualArena);
 			
 			game.addPlayer(player);
 			setGameState(game, GameState.WAITING);
@@ -106,7 +92,7 @@ public class GameManager {
 	
 	public void setGameState(Game game, GameState state) {
 		
-		Bukkit.getServer().broadcastMessage(Colorize.colorize("§7" + game.getId() + " §ehave his state changed to §7" + state.toString()));
+		Bukkit.getServer().broadcastMessage(Utils.colorize("§7" + game.getId() + " §ehave his state changed to §7" + state.toString()));
 		
 		switch(state) {
 		case BLANK:

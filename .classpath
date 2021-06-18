@@ -7,6 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/home/leonardo/Documentos/Server/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar"/>
-	<classpathentry kind="lib" path="/home/leonardo/Downloads/VW_API.jar"/>
+	<classpathentry kind="lib" path="/home/leonardo/Downloads/VirtualWorlds.jar"/>
+	<classpathentry kind="lib" path="/home/leonardo/Documentos/Server/plugins/worldedit-bukkit-6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

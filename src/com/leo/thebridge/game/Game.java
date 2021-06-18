@@ -7,9 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-
-import com.leo.thebridge.tasks.GameTasker;
-import com.leo.thebridge.utils.Colorize;
+import com.leo.thebridge.utils.Utils;
 
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
@@ -21,8 +19,6 @@ public class Game {
 	private String id;
 	private GameState gameState;
 	
-	private GameTasker gameTasker;
-	
 	private VirtualArena virtualArena;
 	
 	public Game(String id, VirtualArena arena) {
@@ -30,9 +26,7 @@ public class Game {
 		this.gameState = setBlank();
 		this.players = new ArrayList<Player>();
 		// this.arena = arena;
-		
-		this.gameTasker = new GameTasker(this);
-		
+				
 		Bukkit.getServer().broadcastMessage("A new game is being crated §7" + id);
 		
 		this.virtualArena = arena;
@@ -66,13 +60,13 @@ public class Game {
 		player.teleport(this.getVirtualArena().getLocationOne());
 		this.players.add(player);
 
-		player.sendMessage(Colorize.colorize("§8Enviando para " + this.getId() + " [" + this.getVirtualArena().getName() + "]"));
-		broadcast(Colorize.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
+		player.sendMessage(Utils.colorize("§8Enviando para " + this.getId() + " [" + this.getVirtualArena().getName() + "]"));
+		broadcast(Utils.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
 		
 	}
 	
 	public void removePlayer(Player player) {
-		broadcast(Colorize.colorize("§7" + player.getName() + " §cabandonou a partida."));
+		broadcast(Utils.colorize("§7" + player.getName() + " §cabandonou a partida."));
 		this.players.remove(player);
 
 	}

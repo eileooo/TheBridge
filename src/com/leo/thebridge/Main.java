@@ -9,30 +9,39 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.leo.thebridge.commands.BasicCommands;
-import com.leo.thebridge.configuration.Configuration;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.listeners.QuitListeners;
 import com.leo.thebridge.listeners.SimpleListeners;
+import com.leo.thebridge.utils.Utils;
 
 public class Main extends JavaPlugin{
 	
 	private GameManager gameManager;
-	private Configuration configuration;
 	
 	private File configFile;
 	private YamlConfiguration configYaml;
 	
+	private File schematicFile;
+	
 	public void onEnable() {
 		
 		loadConfiguration();
-		this.configuration = new Configuration(this);
+		
+		schematicFile = new File(getDataFolder(), "fire.schematic");
+		
+		
 		this.gameManager = new GameManager(this);
 		
-		this.getCommand("entrar").setExecutor(new BasicCommands(gameManager));
-		this.getCommand("forcestart").setExecutor(new BasicCommands(gameManager));
+		
+		BasicCommands basicCommands = new BasicCommands(gameManager);
+		
+		this.getCommand("entrar").setExecutor(basicCommands);
+		this.getCommand("forcestart").setExecutor(basicCommands);
+		this.getCommand("arena").setExecutor(basicCommands);
 		
 		Bukkit.getPluginManager().registerEvents(new SimpleListeners(gameManager), this);
 		Bukkit.getPluginManager().registerEvents(new QuitListeners(gameManager), this);
+		
 		
 	}
 	
@@ -50,15 +59,17 @@ public class Main extends JavaPlugin{
 		
 		try {
 			this.configYaml.load(file);
+			Utils.log("Config carregada");
+
 			
 		} catch (IOException | InvalidConfigurationException ex) {
 			ex.printStackTrace();
+			Utils.log("Erro ao carregar a config");
+
 		}
+		
 	}
 
-	public Configuration getConfiguration() {
-		return configuration;
-	}
 	
 	public File getConfigFile() {
 		return configFile;
@@ -74,6 +85,10 @@ public class Main extends JavaPlugin{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public File getSchematicFile() {
+		return this.schematicFile;
 	}
 	
 }
