@@ -3,12 +3,14 @@ package com.leo.thebridge.game;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
+import com.leo.thebridge.tasks.PlayingTask;
+import com.leo.thebridge.tasks.StartingGameTask;
 import com.leo.thebridge.utils.Utils;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class GameManager {
 		if (joiningGame.isEmpty()) {
 			
 			//debug
-			Bukkit.getServer().broadcastMessage("§eNenhum jogo encontrado, aguarde.");
+			Utils.log("§eNenhum jogo encontrado, criando");
 
 			// by default the game state is waiting
 			VirtualArena virtualArena = new VirtualArena("Fire", plugin.getSchematicFile());
@@ -54,21 +56,26 @@ public class GameManager {
 			setGameState(game, GameState.WAITING);
 			this.addGame(game);
 			
+			player.sendMessage(Utils.colorize("§8Enviando para " + game.getId() + " [" + game.getVirtualArena().getName() + "]"));
+			
+			
 		} else {
 			
 			Game game = joiningGame.get();
 			
 			this.games.remove(game);
 			// debug
-			Bukkit.getServer().broadcastMessage("§eUm jogo foi encontrado, aguarde.");
+			Utils.log("§eUm jogo foi encontrado, enviando player §7[" + player.getName() + "}");
 			
 			game.addPlayer(player);
+			player.sendMessage(Utils.colorize("§8§oEnviando para " + game.getId() + " [" + game.getVirtualArena().getName() + "]"));
 			
 			if (game.getPlayersCount() == 2) {
 				setGameState(game, GameState.STARTING);
 			}
 			
 			this.games.add(game);
+			
 		}
 	}
 	
@@ -78,13 +85,10 @@ public class GameManager {
 		
 		if (game.getPlayersCount() == 1) {
 			setGameState(game, GameState.WAITING);
-			Bukkit.getServer().broadcastMessage("y");
 		} else if (game.getPlayersCount() == 0) {
 			setGameState(game, GameState.BLANK);
-			Bukkit.getServer().broadcastMessage("x");
 		}
 	
-		
 		// todo: give win if there's another player
 		// set state to finished
 		// teleport resting player to the lobby
@@ -92,7 +96,7 @@ public class GameManager {
 	
 	public void setGameState(Game game, GameState state) {
 		
-		Bukkit.getServer().broadcastMessage(Utils.colorize("§7" + game.getId() + " §ehave his state changed to §7" + state.toString()));
+		Utils.log("§7" + game.getId() + " §ehave his state changed to §7" + state.toString());
 		
 		switch(state) {
 		case BLANK:
@@ -100,16 +104,23 @@ public class GameManager {
 		case WAITING:
 			break;
 		case STARTING:
-			game.broadcast(" ");
-			game.broadcast("§aGame starting!");
-			game.broadcast(" ");
-			
-			game.getPlayers().forEach(player -> {
-				player.teleport(game.getVirtualArena().getLocationOne());
-			});
+			StartingGameTask startingTask = new StartingGameTask(this, game);
+			startingTask.runTaskTimer(plugin, 0, 20);
 			break;
 		case ACTIVE:
-			game.broadcast("§cComeçou!");
+			game.broadcast("");
+			game.broadcast("§e§lThe Bridge");
+			game.broadcast("§7* Entre 5 vezes no portal do seu adversário ");
+			game.broadcast("§7para vencer o jogo.");
+			game.broadcast("");
+			
+			game.giveTeams();
+			game.teleportPlayersToSpot();
+			
+			PlayingTask gamingTask = new PlayingTask(game);
+			gamingTask.runTaskTimer(plugin, 0, 20);
+			
+			
 			break;
 		case FINISHED: 
 			break;
@@ -151,4 +162,17 @@ public class GameManager {
 	public Main getPlugin() {
 		return plugin;
 	}
+	
+	public ActivePlayer getActivePlayerFromUUID(UUID uuid) {
+		for (Game game : games) {
+			for (ActivePlayer activePlayer : game.getActivePlayers()) {
+				if (activePlayer.getUUID() == uuid) {
+					return activePlayer;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 }

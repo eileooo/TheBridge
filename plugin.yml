@@ -10,3 +10,5 @@ commands:
     description: Force start.
   arena:
     description: debug purpouses.
+  points:
+    description: check how many points you did.

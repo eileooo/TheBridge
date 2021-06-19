@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.GameState;
@@ -42,12 +43,18 @@ public class BasicCommands implements CommandExecutor {
 				return true;
 			} else {
 				player.sendMessage(Utils.colorize("§cVocê não está jogando!"));
+				return true;
 			}
 
 		} else if (command.getName().equals("arena")) {
 			World arena = Bukkit.getWorld("arena");
 			
 			player.teleport(new Location(arena, 1567, 73, 1261));
+			return true;
+		} else if (command.getName().equals("points")) {
+			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(player.getUniqueId());
+			player.sendMessage(Utils.colorize("§eVocê tem §7" + activePlayer.getPoints() + "§e pontos"));
+			return true;
 		}
 		
 		

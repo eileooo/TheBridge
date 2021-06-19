@@ -10,6 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.leo.thebridge.commands.BasicCommands;
 import com.leo.thebridge.game.GameManager;
+import com.leo.thebridge.listeners.ChatListener;
+import com.leo.thebridge.listeners.PortalJoinListener;
 import com.leo.thebridge.listeners.QuitListeners;
 import com.leo.thebridge.listeners.SimpleListeners;
 import com.leo.thebridge.utils.Utils;
@@ -38,9 +40,12 @@ public class Main extends JavaPlugin{
 		this.getCommand("entrar").setExecutor(basicCommands);
 		this.getCommand("forcestart").setExecutor(basicCommands);
 		this.getCommand("arena").setExecutor(basicCommands);
+		this.getCommand("points").setExecutor(basicCommands);
 		
 		Bukkit.getPluginManager().registerEvents(new SimpleListeners(gameManager), this);
 		Bukkit.getPluginManager().registerEvents(new QuitListeners(gameManager), this);
+		Bukkit.getPluginManager().registerEvents(new ChatListener(gameManager), this);
+		Bukkit.getPluginManager().registerEvents(new PortalJoinListener(gameManager), this);
 		
 		
 	}
