@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.leo.thebridge.utils.Utils;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -21,8 +22,6 @@ import com.sk89q.worldedit.world.DataException;
 
 import net.elicodes.reset.reset.EmptyWorldGenerator;
 import net.elicodes.reset.reset.LoadWorld;
-import net.minecraft.server.v1_8_R3.BlockEnderPortal;
-import net.minecraft.server.v1_8_R3.TileEntityEnderPortal;
 
 @SuppressWarnings("deprecation")
 public class VirtualArena {
@@ -50,7 +49,7 @@ public class VirtualArena {
 		
 			try {	
 				CuboidClipboard clipboard = CuboidClipboard.loadSchematic(schematicFile);
-				clipboard.paste(editSession,  new Vector(0, 100 ,0), false);
+				clipboard.paste(editSession,  new Vector(0, 25 ,0), false);
 			} catch (DataException | IOException | MaxChangedBlocksException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,6 +58,7 @@ public class VirtualArena {
 			loadedWorld.setDifficulty(Difficulty.PEACEFUL);
 			loadedWorld.setTime(0);
 			loadedWorld.setStorm(false);
+			loadedWorld.setSpawnLocation(25, 160, -21);
 			
 			this.world = loadedWorld;
 			world.getBlockAt(getLocationOne().add(2, 0, 0)).setType(Material.ENDER_PORTAL);
@@ -77,6 +77,15 @@ public class VirtualArena {
 		return name;
 	}
 	
+	public void unload() {
+		
+		try {
+			Bukkit.unloadWorld(world, false);	
+		} catch (ClassCastException e) {
+			Utils.log("Deu erro aqui ó");
+		}
+
+	}
 
 	
 }

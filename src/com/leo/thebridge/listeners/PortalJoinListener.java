@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.ActivePlayer;
+import com.leo.thebridge.game.Game;
 
 public class PortalJoinListener implements Listener{
 	
@@ -25,8 +26,8 @@ public class PortalJoinListener implements Listener{
 			event.setCancelled(true);
 			
 			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
-			
-			gameManager.getGameFromPlayer(event.getPlayer()).scorePoint(activePlayer);
+			Game game = gameManager.getGameFromPlayer(event.getPlayer());
+			gameManager.scorePoint(game, activePlayer);
 			
 		}
 	}

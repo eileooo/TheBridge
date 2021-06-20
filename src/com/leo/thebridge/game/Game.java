@@ -16,11 +16,12 @@ public class Game {
 	private List<Player> players;
 	private List<ActivePlayer> activePlayers;
 	private String id;
-	private GameState gameState;
+	public GameState gameState;
 	
 	private VirtualArena virtualArena;
 	
 	private int round = 1;
+	private ActivePlayer winner;
 	
 	public Game(String id, VirtualArena arena) {
 		this.id = id;
@@ -28,6 +29,7 @@ public class Game {
 		this.players = new ArrayList<Player>();
 		this.activePlayers = new ArrayList<ActivePlayer>();
 		this.virtualArena = arena;
+		this.winner = null;
 		
 		Utils.log("A new game is being created §8[" + id + "]");
 	}
@@ -56,7 +58,7 @@ public class Game {
 		player.teleport(this.getVirtualArena().getLocationOne());
 		
 		this.players.add(player);
-		this.activePlayers.add(new ActivePlayer(player.getUniqueId()));
+		this.activePlayers.add(new ActivePlayer(player));
 
 		broadcast(Utils.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
 		
@@ -72,6 +74,19 @@ public class Game {
 		
 	}
 	
+	public void reset() {
+		if (!getPlayers().isEmpty() ) {
+			for (Player player : getPlayers()) {
+				player.performCommand("lobby");
+				removePlayer(player);
+				
+			}
+		}
+		
+		virtualArena.unload();
+
+	}
+	
 	public int getPlayersCount() {
 		return this.players.size();
 	}	
@@ -79,8 +94,16 @@ public class Game {
 		return this.gameState;
 	}
 	
+	public ActivePlayer getWinner() {
+		return winner;
+	}
+	
+	public void setWinner(ActivePlayer winner) {
+		this.winner = winner;
+	}
+	
 	public void broadcast(String message) {
-		players.forEach((player) -> player.sendMessage(message));
+		players.forEach((player) -> player.sendMessage(Utils.colorize(message)));
 	}
 	
 	public void sendActionBar(String message) {
@@ -88,6 +111,11 @@ public class Game {
         players.forEach(player -> {
         	((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         });
+	}
+	
+	public void sendActionBar(Player player, String message) {
+		PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte)2);
+		((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -119,7 +147,7 @@ public class Game {
 		
 	}
 	
-	public void scorePoint(ActivePlayer player) {
+	public void handlePoint(ActivePlayer player) {
 		player.addPoint();
 		teleportPlayersToSpot();
 	}
@@ -141,7 +169,7 @@ public class Game {
 				.get();
 	}
 	
-	private Player getPlayerFromActivePlayer(ActivePlayer activePlayer) {
+	public Player getPlayerFromActivePlayer(ActivePlayer activePlayer) {
 		return this.players
 				.stream()
 				.filter(player -> {
@@ -150,7 +178,7 @@ public class Game {
 	}
 	
 	
-	private ActivePlayer getActivePlayerFromPlayer(Player player) {
+	public ActivePlayer getActivePlayerFromPlayer(Player player) {
 		return this.activePlayers
 				.stream()
 				.filter(active -> {

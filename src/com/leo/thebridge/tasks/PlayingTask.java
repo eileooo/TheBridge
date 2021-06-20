@@ -2,8 +2,10 @@ package com.leo.thebridge.tasks;
 
 import com.leo.thebridge.utils.Utils;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameState;
 
@@ -20,9 +22,20 @@ public class PlayingTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		seconds++;
-		game.sendActionBar(Utils.colorize("§eTimer: §7" + getFormattedTimer()));
+		StringBuilder builder = new StringBuilder();
+		builder.append(Utils.colorize("§eTimer: §7" + getFormattedTimer()));
 		
-		if (game.getGameState() != GameState.ACTIVE) this.cancel();
+		for (Player player : game.getPlayers()) {
+			
+			ActivePlayer activePlayer = game.getActivePlayerFromPlayer(player);
+			int points = activePlayer.getPoints();
+			game.sendActionBar(player, builder.toString() + " §f| " + "§7" + points + " §eponto" + (points == 1 ? "" : "s"));
+		}
+		
+		if (game.getGameState() != GameState.ACTIVE) {
+			this.cancel();
+			Utils.log("Task cancelled");
+		}
 	}
 	
 	public String getFormattedTimer() {

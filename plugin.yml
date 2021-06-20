@@ -12,3 +12,5 @@ commands:
     description: debug purpouses.
   points:
     description: check how many points you did.
+  state: 
+    description: debug pourpouses, check game state.

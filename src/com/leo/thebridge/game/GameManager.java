@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
+import com.leo.thebridge.tasks.FinishedTask;
 import com.leo.thebridge.tasks.PlayingTask;
 import com.leo.thebridge.tasks.StartingGameTask;
 import com.leo.thebridge.utils.Utils;
@@ -46,9 +47,7 @@ public class GameManager {
 		if (joiningGame.isEmpty()) {
 			
 			//debug
-			Utils.log("§eNenhum jogo encontrado, criando");
-
-			// by default the game state is waiting
+			Utils.log("§eNenhuma partida encontrada, criando");
 			VirtualArena virtualArena = new VirtualArena("Fire", plugin.getSchematicFile());
 			Game game = new Game(Utils.getRandomID(), virtualArena);
 			
@@ -65,13 +64,15 @@ public class GameManager {
 			
 			this.games.remove(game);
 			// debug
-			Utils.log("§eUm jogo foi encontrado, enviando player §7[" + player.getName() + "}");
+			Utils.log("§eUma partida foi encontrada, enviando player §7[" + player.getName() + "}");
 			
 			game.addPlayer(player);
 			player.sendMessage(Utils.colorize("§8§oEnviando para " + game.getId() + " [" + game.getVirtualArena().getName() + "]"));
 			
 			if (game.getPlayersCount() == 2) {
 				setGameState(game, GameState.STARTING);
+			} else {
+				setGameState(game, GameState.WAITING);
 			}
 			
 			this.games.add(game);
@@ -111,7 +112,7 @@ public class GameManager {
 			game.broadcast("");
 			game.broadcast("§e§lThe Bridge");
 			game.broadcast("§7* Entre 5 vezes no portal do seu adversário ");
-			game.broadcast("§7para vencer o jogo.");
+			game.broadcast("§7para vencer a partida.");
 			game.broadcast("");
 			
 			game.giveTeams();
@@ -123,8 +124,48 @@ public class GameManager {
 			
 			break;
 		case FINISHED: 
+			
+			ActivePlayer winner = game.getWinner();
+			if (winner == null) {
+				game.broadcast("");
+				game.broadcast("§cFim de partida, nenhum vencedor foi encontrado.");
+				game.broadcast("");
+			} else {
+				game.broadcast("");
+				game.broadcast("§a§lFIM DE PARTIDA");
+				game.broadcast("§7* §e" + winner.getName() + "§7 venceu!");
+				game.broadcast("");
+			}
+			FinishedTask finishedTask = new FinishedTask(this, game);
+			finishedTask.runTaskTimer(plugin, 0, 20);
+			break;
+		case RESETING:
+			reset(game);
 			break;
 		}
+		
+		game.gameState = state;
+		
+	}
+	
+	public void scorePoint(Game game, ActivePlayer player) {
+		game.handlePoint(player);
+		endGameIfNeeded(game);
+		
+	}
+	
+	private void endGameIfNeeded(Game game) {
+		for (ActivePlayer player : game.getActivePlayers()) {
+			if (player.getPoints() == 5) {
+				game.setWinner(player);
+				setGameState(game, GameState.FINISHED);
+			}
+		}
+	}
+	
+	public void reset(Game game) {
+		game.reset();
+		this.games.remove(game);
 	}
 	
 	public boolean isPlayerPlaying(Player player) {

@@ -55,6 +55,9 @@ public class BasicCommands implements CommandExecutor {
 			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(player.getUniqueId());
 			player.sendMessage(Utils.colorize("§eVocê tem §7" + activePlayer.getPoints() + "§e pontos"));
 			return true;
+		} else if (command.getName().equals("state")) {
+			Game game = gameManager.getGameFromPlayer(player); 
+			player.sendMessage("§eGame state is §7" + game.getGameState().toString() + " §8[" + game.getId() + "]");
 		}
 		
 		
