@@ -11,6 +11,8 @@ public class ActivePlayer {
 	
 	private UUID uuid;
 	private String name;
+	private Player player;
+	
 	
 	private Team team;
 	private int deaths = 0;
@@ -19,6 +21,7 @@ public class ActivePlayer {
 	
 	public ActivePlayer(Player player) {
 		this.uuid = player.getUniqueId();
+		this.player = player;
 		this.name = player.getName();
 		
 		Utils.log("A new active player is being created, §7" + uuid.toString());
@@ -62,6 +65,10 @@ public class ActivePlayer {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 	
 	

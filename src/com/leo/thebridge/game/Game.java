@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+
+import com.leo.thebridge.utils.Cuboid;
 import com.leo.thebridge.utils.Utils;
 
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -31,6 +33,8 @@ public class Game {
 		this.virtualArena = arena;
 		this.winner = null;
 		
+		
+		
 		Utils.log("A new game is being created §8[" + id + "]");
 	}
 	
@@ -46,6 +50,9 @@ public class Game {
 	public int getRound() {		
 		return round;
 	}
+	
+
+	
 	
 	public List<ActivePlayer> getActivePlayers() {
 		return activePlayers;
@@ -75,13 +82,14 @@ public class Game {
 	}
 	
 	public void reset() {
-		if (!getPlayers().isEmpty() ) {
+		if (!getPlayers().isEmpty() || getPlayers() != null) {
 			for (Player player : getPlayers()) {
 				player.performCommand("lobby");
-				removePlayer(player);
-				
 			}
 		}
+		
+		players.clear();
+		activePlayers.clear();
 		
 		virtualArena.unload();
 
@@ -143,8 +151,15 @@ public class Game {
 		if (getPlayersCount() == 2) {
 			getPlayerFromActivePlayer(getBlueTeamPlayer()).teleport(virtualArena.getLocationTwo());
 		}
-		
-		
+	}
+	
+	public void teleportPlayerToRespectiveSpot(Player player, ActivePlayer activePlayer) {
+		Team team = activePlayer.getTeam();
+		if (team == Team.RED) {
+			player.teleport(virtualArena.getLocationOne());
+		} else if (team == Team.BLUE) {
+			player.teleport(virtualArena.getLocationTwo());
+		}
 	}
 	
 	public void handlePoint(ActivePlayer player) {

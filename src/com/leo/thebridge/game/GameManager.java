@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.Main;
@@ -13,6 +15,8 @@ import com.leo.thebridge.tasks.FinishedTask;
 import com.leo.thebridge.tasks.PlayingTask;
 import com.leo.thebridge.tasks.StartingGameTask;
 import com.leo.thebridge.utils.Utils;
+
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;	
@@ -95,6 +99,7 @@ public class GameManager {
 		// teleport resting player to the lobby
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setGameState(Game game, GameState state) {
 		
 		Utils.log("§7" + game.getId() + " §ehave his state changed to §7" + state.toString());
@@ -133,9 +138,21 @@ public class GameManager {
 			} else {
 				game.broadcast("");
 				game.broadcast("§a§lFIM DE PARTIDA");
-				game.broadcast("§7* §e" + winner.getName() + "§7 venceu!");
+				game.broadcast("§7* "+ winner.getTeam().getColor(winner.getTeam()) + winner.getName() + "§7 venceu!");
 				game.broadcast("");
+				
+				for (ActivePlayer player : game.getActivePlayers()) {
+					if (player == winner) {
+						
+						player.getPlayer().sendTitle(Utils.colorize("§a§lVITORIA"), Utils.colorize("§fVocê venceu"));
+					} else {
+						player.getPlayer().sendTitle(Utils.colorize("§C§lDERROTA"), Utils.colorize("§7" + winner.getName() +  " §fvenceu"));
+					}
+				}
 			}
+			
+			game.getPlayers().forEach(player -> player.setGameMode(GameMode.SPECTATOR));
+			game.playSound(Sound.LEVEL_UP);			
 			FinishedTask finishedTask = new FinishedTask(this, game);
 			finishedTask.runTaskTimer(plugin, 0, 20);
 			break;
@@ -149,7 +166,11 @@ public class GameManager {
 	}
 	
 	public void scorePoint(Game game, ActivePlayer player) {
+		if (game.getGameState() != GameState.ACTIVE) return;
 		game.handlePoint(player);
+		
+		game.broadcast(player.getTeam().getColor(player.getTeam()) + player.getName() + "§7 marcou um ponto!");
+		
 		endGameIfNeeded(game);
 		
 	}

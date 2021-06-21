@@ -18,7 +18,7 @@ public class FinishedTask extends BukkitRunnable{
 	}
 
 	
-	int timer = 10;
+	int timer = 30;
 	
 	@Override
 	public void run() {
