@@ -7,6 +7,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.Team;
+import com.leo.thebridge.utils.Utils;
 
 public class ChatListener implements Listener{
 	
@@ -25,7 +26,7 @@ public class ChatListener implements Listener{
 		
 		Team team = activePlayer.getTeam();
 		if (team != null) {
-			builder.append(team.getTag(team) + " §7%s: %s");
+			builder.append(Utils.getTag(team) + " §7%s: %s");
 		} else {
 			builder.append("§7%s: %s");
 		}

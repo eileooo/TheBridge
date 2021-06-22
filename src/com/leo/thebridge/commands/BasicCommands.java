@@ -3,6 +3,7 @@ package com.leo.thebridge.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -47,7 +48,7 @@ public class BasicCommands implements CommandExecutor {
 			}
 
 		} else if (command.getName().equals("arena")) {
-			World arena = Bukkit.getWorld("arena");
+			World arena = new WorldCreator("boo").createWorld();
 			
 			player.teleport(new Location(arena, 1567, 73, 1261));
 			return true;
@@ -58,6 +59,8 @@ public class BasicCommands implements CommandExecutor {
 		} else if (command.getName().equals("state")) {
 			Game game = gameManager.getGameFromPlayer(player); 
 			player.sendMessage("§eGame state is §7" + game.getGameState().toString() + " §8[" + game.getId() + "]");
+		} else if (command.getName().equalsIgnoreCase("location")) {
+			player.sendMessage(player.getLocation().toString());
 		}
 		
 		

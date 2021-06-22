@@ -14,3 +14,5 @@ commands:
     description: check how many points you did.
   state: 
     description: debug pourpouses, check game state.
+  location: 
+    description: debug pourpouses, get your location.

@@ -2,12 +2,15 @@ package com.leo.thebridge.tasks;
 
 import com.leo.thebridge.utils.Utils;
 
+import java.util.ArrayList;
+
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameState;
+import com.leo.thebridge.scoreboard.FastBoard;
 
 public class PlayingTask extends BukkitRunnable {
 
@@ -31,6 +34,28 @@ public class PlayingTask extends BukkitRunnable {
 			int points = activePlayer.getPoints();
 			game.sendActionBar(player, builder.toString() + " §f| " + "§7" + points + " §eponto" + (points == 1 ? "" : "s"));
 		}
+		
+		for (FastBoard board : game.getBoards().values()) {
+			
+			ActivePlayer player = game.getActivePlayerFromPlayer(board.getPlayer());
+			
+			ArrayList<String> lines = new ArrayList<>();
+			lines.add("");
+			lines.add(Utils.colorize("§fTime: " + Utils.getTag(player.getTeam())));
+			lines.add("");
+			lines.add("§fPontuação:");
+			lines.add(Utils.colorize("§7* Você: §a(" + player.getPoints() + "§7/§a5)"));
+//			lines.add(Utils.colorize("§7* Você: §a(" + player.getPoints() + "§7/§a5)"));
+		
+			lines.add("");
+			lines.add(Utils.colorize("§fAbates: §c" + player.getKills()));
+			lines.add(Utils.colorize("§fMortes: §c" + player.getDeaths()));
+			lines.add("");
+			
+			board.updateLines(lines);
+			
+		}
+		
 		
 		if (game.getGameState() != GameState.ACTIVE) {
 			this.cancel();

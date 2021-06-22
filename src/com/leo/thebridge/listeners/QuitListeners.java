@@ -22,10 +22,7 @@ public class QuitListeners implements Listener {
 		Player player = event.getPlayer();
 		
 		if (gameManager.isPlayerPlaying(player)) {
-			Game game = gameManager.getGameFromPlayer(player);
-			if (game.getGameState() == GameState.ACTIVE || game.getGameState() == GameState.WAITING) {
-				gameManager.handleQuit(player);	
-			}
+			gameManager.handleQuit(player);	
 		}
 	}
 	

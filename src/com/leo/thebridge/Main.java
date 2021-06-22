@@ -28,13 +28,11 @@ public class Main extends JavaPlugin{
 	
 	public void onEnable() {
 		
+		this.schematicFile = new File(getDataFolder(), "boo.schematic");
+		
 		loadConfiguration();
 		
-		schematicFile = new File(getDataFolder(), "fire.schematic");
-		
-		
 		this.gameManager = new GameManager(this);
-		
 		
 		BasicCommands basicCommands = new BasicCommands(gameManager);
 		
@@ -43,6 +41,7 @@ public class Main extends JavaPlugin{
 		this.getCommand("arena").setExecutor(basicCommands);
 		this.getCommand("points").setExecutor(basicCommands);
 		this.getCommand("state").setExecutor(basicCommands);
+		this.getCommand("location").setExecutor(basicCommands);
 		
 		Bukkit.getPluginManager().registerEvents(new SimpleListeners(gameManager), this);
 		Bukkit.getPluginManager().registerEvents(new QuitListeners(gameManager), this);
@@ -86,6 +85,10 @@ public class Main extends JavaPlugin{
 		return configYaml;
 	}
 	
+	public File getSchematicFile() {
+		return schematicFile;
+	}
+	
 	public void saveConfiguration() {
 		try {
 			this.configYaml.save(this.configFile);
@@ -93,9 +96,5 @@ public class Main extends JavaPlugin{
 			e.printStackTrace();
 		}
 	}
-	
-	public File getSchematicFile() {
-		return this.schematicFile;
-	}
-	
+
 }

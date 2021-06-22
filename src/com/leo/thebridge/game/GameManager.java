@@ -16,8 +16,6 @@ import com.leo.thebridge.tasks.PlayingTask;
 import com.leo.thebridge.tasks.StartingGameTask;
 import com.leo.thebridge.utils.Utils;
 
-import net.md_5.bungee.api.ChatColor;
-
 import java.util.ArrayList;
 import java.util.Arrays;	
 
@@ -44,7 +42,7 @@ public class GameManager {
 	
 	public void handleJoin(Player player) {
 		Stream<Game> availableGames = games.stream().filter(game -> {
-			return game.getPlayersCount() <= 1; 
+			return game.getGameState() == GameState.WAITING || game.getGameState() == GameState.BLANK; 
 		});
 		
 		Optional<Game> joiningGame = availableGames.findAny();
@@ -52,8 +50,7 @@ public class GameManager {
 			
 			//debug
 			Utils.log("§eNenhuma partida encontrada, criando");
-			VirtualArena virtualArena = new VirtualArena("Fire", plugin.getSchematicFile());
-			Game game = new Game(Utils.getRandomID(), virtualArena);
+			Game game = new Game(Utils.getRandomID(), this.plugin.getSchematicFile());
 			
 			game.addPlayer(player);
 			setGameState(game, GameState.WAITING);
@@ -88,15 +85,40 @@ public class GameManager {
 		Game game = getGameFromPlayer(player);
 		game.removePlayer(player);
 		
-		if (game.getPlayersCount() == 1) {
-			setGameState(game, GameState.WAITING);
-		} else if (game.getPlayersCount() == 0) {
-			setGameState(game, GameState.BLANK);
+		switch(game.getGameState()) {
+			case WAITING: 
+				if (game.getPlayers().isEmpty()) {
+					setGameState(game, GameState.BLANK);
+				}
+			break;
+			
+			case STARTING: 
+				if (game.getPlayers().size() == 1) { 
+					setGameState(game, GameState.WAITING);
+				} else if (game.getPlayers().isEmpty()){
+					setGameState(game, GameState.BLANK);
+				}
+			break;
+			
+			case ACTIVE:
+				if (game.getPlayers().size() == 1) {
+					game.setWinner(game.getActivePlayers().get(0));
+					setGameState(game, GameState.FINISHED);
+				} else if (game.getPlayers().isEmpty()) {
+					setGameState(game, GameState.RESETING);
+				}
+				break;
+				
+			case FINISHED:
+				if (game.getPlayers().isEmpty()) {
+					setGameState(game, GameState.RESETING);
+				}
+				break;
+				
+			default:
+				break;
 		}
 	
-		// todo: give win if there's another player
-		// set state to finished
-		// teleport resting player to the lobby
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -138,7 +160,7 @@ public class GameManager {
 			} else {
 				game.broadcast("");
 				game.broadcast("§a§lFIM DE PARTIDA");
-				game.broadcast("§7* "+ winner.getTeam().getColor(winner.getTeam()) + winner.getName() + "§7 venceu!");
+				game.broadcast("§7* "+ Utils.getColor(winner.getTeam()) + winner.getName() + "§7 venceu!");
 				game.broadcast("");
 				
 				for (ActivePlayer player : game.getActivePlayers()) {
@@ -169,7 +191,7 @@ public class GameManager {
 		if (game.getGameState() != GameState.ACTIVE) return;
 		game.handlePoint(player);
 		
-		game.broadcast(player.getTeam().getColor(player.getTeam()) + player.getName() + "§7 marcou um ponto!");
+		game.broadcast(Utils.getColor(player.getTeam()) + player.getName() + "§7 marcou um ponto!");
 		
 		endGameIfNeeded(game);
 		
@@ -187,6 +209,8 @@ public class GameManager {
 	public void reset(Game game) {
 		game.reset();
 		this.games.remove(game);
+		
+		Utils.log(game.getId() + " is reseting");
 	}
 	
 	public boolean isPlayerPlaying(Player player) {
@@ -206,7 +230,7 @@ public class GameManager {
 		});
 		
 		return possibleGame.findFirst().get();
-	}
+	} 
 	
 	public void addGame(Game game) {
 		this.games.add(game);
@@ -229,6 +253,18 @@ public class GameManager {
 		for (Game game : games) {
 			for (ActivePlayer activePlayer : game.getActivePlayers()) {
 				if (activePlayer.getUUID() == uuid) {
+					return activePlayer;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	public ActivePlayer getActivePlayerFromPlayer(Player player) {
+		for (Game game : games) {
+			for (ActivePlayer activePlayer : game.getActivePlayers()) {
+				if (activePlayer.getUUID() == player.getUniqueId()) {
 					return activePlayer;
 				}
 			}

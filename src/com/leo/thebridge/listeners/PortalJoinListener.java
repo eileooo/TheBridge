@@ -31,7 +31,7 @@ public class PortalJoinListener implements Listener{
 			event.setCancelled(true);
 			
 			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
-			Game game = gameManager.getGameFromPlayer(event.getPlayer());
+			Game game = activePlayer.getGame();
 			gameManager.scorePoint(game, activePlayer);
 			
 		}
@@ -41,7 +41,7 @@ public class PortalJoinListener implements Listener{
 	public void onMove(PlayerMoveEvent event) {
 		if (!gameManager.isPlayerPlaying(event.getPlayer())) return;
 		ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
-		Game game = gameManager.getGameFromPlayer(event.getPlayer());
+		Game game = activePlayer.getGame();
 		
 		Player player = event.getPlayer();
 		VirtualArena arena =game.getVirtualArena();

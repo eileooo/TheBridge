@@ -5,6 +5,8 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import com.leo.thebridge.game.Team;
+
 public class Utils {
 
 	public static String colorize(String message) {
@@ -19,5 +21,27 @@ public class Utils {
 	
 	public static void log(String message) {
 		Bukkit.getConsoleSender().sendMessage(colorize("§e[TheBridge] " + message));
+	}
+	
+	public static String getTag(Team team) {
+		switch(team) {
+		case BLUE:
+			return getColor(team) + "[Azul]";
+		case RED:
+			return getColor(team) + "[Vermelho]";
+		default:
+			return "";
+		}
+	}
+	
+	public static ChatColor getColor(Team team) {
+		switch (team) {
+		case BLUE:
+			return ChatColor.BLUE;
+		case RED:
+			return ChatColor.RED;
+		default:
+			return ChatColor.WHITE;
+		}
 	}
 }

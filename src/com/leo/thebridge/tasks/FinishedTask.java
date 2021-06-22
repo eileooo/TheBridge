@@ -2,6 +2,10 @@ package com.leo.thebridge.tasks;
 
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.GameState;
+import com.leo.thebridge.scoreboard.FastBoard;
+import com.leo.thebridge.utils.Utils;
+
+import java.util.ArrayList;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -23,13 +27,23 @@ public class FinishedTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		
+for (FastBoard board : game.getBoards().values()) {
+			
+			ArrayList<String> lines = new ArrayList<>();
+			lines.add("");
+			lines.add(Utils.colorize("§fO servidor será resetado em "));
+			lines.add(Utils.colorize("§7" + timer + "§e segundo" + (timer == 1 ? "" : "s")));
+			lines.add("");
+			
+			board.updateLines(lines);
+			
+		}
+		
 		if (timer == 0) {
 			gameManager.setGameState(game, GameState.RESETING);
 			this.cancel();
 			
-		}
-		
-		game.sendActionBar("§aServidor será resetado em " + timer + " segundo" + (timer == 1 ? "" : "s"));
+		}		
 		
 		timer--;
 	}

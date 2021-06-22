@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.utils.Utils;
 
@@ -23,17 +24,19 @@ public class DeathListener implements Listener{
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntityType() != EntityType.PLAYER) return;
+		Player player = (Player) event.getEntity();
+		if (!gameManager.isPlayerPlaying(player)) return;
+		
 		if (event.getCause() == EntityDamageEvent.DamageCause.VOID) { 
 			Utils.log("Void damage.");
-			event.setCancelled(true);
-			 
-			Player player = (Player) event.getEntity();
+			event.setCancelled(true);	
+			ActivePlayer activePlayer = gameManager.getActivePlayerFromPlayer(player);
 			
-			player.teleport(new Location(player.getWorld(), 25, 100, -21));
-			player.setHealth(20.0f);
+			//player.setHealth(0f);
+			player.teleport(activePlayer.getSpawnLocation());
+			activePlayer.addDeath();
 			
-			
-			
+			activePlayer.getGame().broadcast(Utils.getColor(activePlayer.getTeam()) + player.getName() + "§7 caiu no void.");
 		} else if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
 			event.setCancelled(true);
 		}
@@ -41,8 +44,12 @@ public class DeathListener implements Listener{
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
-	    final Player p = e.getEntity();
-	    Bukkit.getScheduler().scheduleSyncDelayedTask(gameManager.getPlugin(), () -> p.spigot().respawn(), 2);
+	    final Player player = e.getEntity();
+	    ActivePlayer activePlayer = gameManager.getActivePlayerFromPlayer(player);
+	    Bukkit.getScheduler().scheduleSyncDelayedTask(gameManager.getPlugin(), () -> {
+	    	player.spigot().respawn();
+	    	player.teleport(activePlayer.getSpawnLocation());
+	    }, 2);
 	}
 
 }
