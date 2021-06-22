@@ -34,7 +34,8 @@ public class Utils {
 		}
 	}
 	
-	public static ChatColor getColor(Team team) {
+	// use method directly from activeplayer object.
+	private static ChatColor getColor(Team team) {
 		switch (team) {
 		case BLUE:
 			return ChatColor.BLUE;
@@ -43,5 +44,5 @@ public class Utils {
 		default:
 			return ChatColor.WHITE;
 		}
-	}
+	} 
 }

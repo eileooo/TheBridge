@@ -3,7 +3,6 @@ package com.leo.thebridge.game;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.bukkit.GameMode;
@@ -148,7 +147,6 @@ public class GameManager {
 			PlayingTask gamingTask = new PlayingTask(game);
 			gamingTask.runTaskTimer(plugin, 0, 20);
 			
-			
 			break;
 		case FINISHED: 
 			
@@ -160,7 +158,7 @@ public class GameManager {
 			} else {
 				game.broadcast("");
 				game.broadcast("§a§lFIM DE PARTIDA");
-				game.broadcast("§7* "+ Utils.getColor(winner.getTeam()) + winner.getName() + "§7 venceu!");
+				game.broadcast("§7* "+ winner.getTeamColor() + winner.getName() + "§7 venceu!");
 				game.broadcast("");
 				
 				for (ActivePlayer player : game.getActivePlayers()) {
@@ -191,7 +189,7 @@ public class GameManager {
 		if (game.getGameState() != GameState.ACTIVE) return;
 		game.handlePoint(player);
 		
-		game.broadcast(Utils.getColor(player.getTeam()) + player.getName() + "§7 marcou um ponto!");
+		game.broadcast(player.getTeamColor() + player.getName() + "§7 marcou um ponto!");
 		
 		endGameIfNeeded(game);
 		
@@ -249,7 +247,7 @@ public class GameManager {
 		return plugin;
 	}
 	
-	public ActivePlayer getActivePlayerFromUUID(UUID uuid) {
+	/*public ActivePlayer getActivePlayerFromUUID(UUID uuid) {
 		for (Game game : games) {
 			for (ActivePlayer activePlayer : game.getActivePlayers()) {
 				if (activePlayer.getUUID() == uuid) {
@@ -259,12 +257,12 @@ public class GameManager {
 		}
 		
 		return null;
-	}
+	} */
 
-	public ActivePlayer getActivePlayerFromPlayer(Player player) {
+	public ActivePlayer getActivePlayer(Player player) {
 		for (Game game : games) {
 			for (ActivePlayer activePlayer : game.getActivePlayers()) {
-				if (activePlayer.getUUID() == player.getUniqueId()) {
+				if (activePlayer.getUuid() == player.getUniqueId()) {
 					return activePlayer;
 				}
 			}
@@ -272,5 +270,11 @@ public class GameManager {
 		
 		return null;
 	}
+
+	public List<Game> getGames() {
+		return games;
+	}
+	
+	
 	
 }

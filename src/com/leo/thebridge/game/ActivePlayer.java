@@ -2,11 +2,11 @@ package com.leo.thebridge.game;
 
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.leo.thebridge.utils.Utils;
-
 
 public class ActivePlayer {
 	
@@ -16,11 +16,15 @@ public class ActivePlayer {
 	private Game game;
 	
 	private Team team;
+	private ActivePlayer enemy = null;
+	
 	private int deaths = 0;
 	private int kills = 0;
 	private int points = 0;
 	
 	private Location spawnLocation;
+	private ChatColor color = ChatColor.GRAY;
+	
 	
 	public ActivePlayer(Player player, Game game) {
 		this.uuid = player.getUniqueId();
@@ -28,13 +32,9 @@ public class ActivePlayer {
 		this.name = player.getName();
 		this.game = game;
 		
-		Utils.log("A new active player is being created, §7" + uuid.toString());
+		Utils.log("A new active player is being created, §7" + player.getUniqueId().toString());
 	}
 	
-	public UUID getUUID() {
-		return uuid;
-	}
-
 	public int getDeaths() {
 		return deaths;
 	}
@@ -55,6 +55,10 @@ public class ActivePlayer {
 		this.team = team;
 	}
 	
+	public void setEnemy(ActivePlayer enemy) {
+		this.enemy = enemy;
+	}
+	
 	public void addKill() {
 		kills++;
 	}
@@ -69,6 +73,10 @@ public class ActivePlayer {
 	
 	public void setSpawnLocation(Location spawnLocation) {
 		this.spawnLocation = spawnLocation;
+	}
+	
+	public void setColor(ChatColor color) {
+		this.color = color;
 	}
 	
 	public String getName() {
@@ -87,6 +95,17 @@ public class ActivePlayer {
 		return game;
 	}
 	
+	public ActivePlayer getEnemy() {
+		return enemy;
+	}
+	
+	public ChatColor getTeamColor() {
+		return color;
+	}
+	
+	public UUID getUuid() {
+		return uuid;
+	}
 	
 	
 

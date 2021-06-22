@@ -30,7 +30,7 @@ public class PortalJoinListener implements Listener{
 		if (event.getCause() == TeleportCause.END_PORTAL) {
 			event.setCancelled(true);
 			
-			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
+			ActivePlayer activePlayer = gameManager.getActivePlayer(event.getPlayer());
 			Game game = activePlayer.getGame();
 			gameManager.scorePoint(game, activePlayer);
 			
@@ -40,7 +40,7 @@ public class PortalJoinListener implements Listener{
 	@EventHandler 
 	public void onMove(PlayerMoveEvent event) {
 		if (!gameManager.isPlayerPlaying(event.getPlayer())) return;
-		ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
+		ActivePlayer activePlayer = gameManager.getActivePlayer(event.getPlayer());
 		Game game = activePlayer.getGame();
 		
 		Player player = event.getPlayer();

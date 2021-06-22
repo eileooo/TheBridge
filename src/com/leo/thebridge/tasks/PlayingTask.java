@@ -38,18 +38,24 @@ public class PlayingTask extends BukkitRunnable {
 		for (FastBoard board : game.getBoards().values()) {
 			
 			ActivePlayer player = game.getActivePlayerFromPlayer(board.getPlayer());
+			ActivePlayer enemy = player.getEnemy();
+			
+			String points = "§7* " + player.getTeamColor() + "Você§7: §a(" + player.getPoints() + "§7/§a5)";
 			
 			ArrayList<String> lines = new ArrayList<>();
 			lines.add("");
 			lines.add(Utils.colorize("§fTime: " + Utils.getTag(player.getTeam())));
 			lines.add("");
 			lines.add("§fPontuação:");
-			lines.add(Utils.colorize("§7* Você: §a(" + player.getPoints() + "§7/§a5)"));
-//			lines.add(Utils.colorize("§7* Você: §a(" + player.getPoints() + "§7/§a5)"));
-		
+			lines.add(Utils.colorize(points));
+			if (enemy != null) {
+				String enemyPoints = "§7* " + enemy.getTeamColor() + enemy.getName() + "§7: §a(" + enemy.getPoints() + "§7/§a5)";
+				lines.add(Utils.colorize(enemyPoints));
+			}
+			
 			lines.add("");
-			lines.add(Utils.colorize("§fAbates: §c" + player.getKills()));
-			lines.add(Utils.colorize("§fMortes: §c" + player.getDeaths()));
+			lines.add(Utils.colorize("§fAbates: §7" + player.getKills()));
+			lines.add(Utils.colorize("§fMortes: §7" + player.getDeaths()));
 			lines.add("");
 			
 			board.updateLines(lines);

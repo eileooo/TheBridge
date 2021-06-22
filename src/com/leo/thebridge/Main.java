@@ -9,12 +9,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.leo.thebridge.commands.BasicCommands;
+import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.listeners.ChatListener;
 import com.leo.thebridge.listeners.DeathListener;
 import com.leo.thebridge.listeners.PortalJoinListener;
 import com.leo.thebridge.listeners.QuitListeners;
 import com.leo.thebridge.listeners.SimpleListeners;
+import com.leo.thebridge.scoreboard.FastBoard;
 import com.leo.thebridge.utils.Utils;
 
 public class Main extends JavaPlugin{
@@ -38,9 +40,7 @@ public class Main extends JavaPlugin{
 		
 		this.getCommand("entrar").setExecutor(basicCommands);
 		this.getCommand("forcestart").setExecutor(basicCommands);
-		this.getCommand("arena").setExecutor(basicCommands);
-		this.getCommand("points").setExecutor(basicCommands);
-		this.getCommand("state").setExecutor(basicCommands);
+		this.getCommand("forcestop").setExecutor(basicCommands);
 		this.getCommand("location").setExecutor(basicCommands);
 		
 		Bukkit.getPluginManager().registerEvents(new SimpleListeners(gameManager), this);
@@ -49,6 +49,15 @@ public class Main extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(new PortalJoinListener(gameManager), this);
 		Bukkit.getPluginManager().registerEvents(new DeathListener(gameManager), this);
 		
+	}
+	
+	public void onDisable() {
+		for (Game game : gameManager.getGames()) {
+			game.getVirtualArena().unload();
+			for (FastBoard board : game.getBoards().values()) {
+				board.delete();
+			}
+		}
 	}
 	
 	private void loadConfiguration() {

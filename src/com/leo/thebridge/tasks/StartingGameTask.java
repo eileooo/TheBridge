@@ -27,7 +27,7 @@ public class StartingGameTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if (seconds == 10 || seconds <= 3 && seconds > 0) {
-			game.broadcast(Utils.colorize("§eO jogo iniciará em §7" + seconds + "§e segundo" + (seconds == 1 ? "" : "s")));
+			game.broadcast(Utils.colorize("§eIniciando o jogo em §7" + seconds + "§e segundo" + (seconds == 1 ? "" : "s")));
 			game.playSound(Sound.NOTE_STICKS);
 		}
 		
@@ -36,8 +36,8 @@ public class StartingGameTask extends BukkitRunnable{
 			
 			ArrayList<String> lines = new ArrayList<>();
 			lines.add("");
-			lines.add(Utils.colorize("§fIniciando em:     "));
-			lines.add(Utils.colorize("§7" + seconds + "§e segundo" + (seconds == 1 ? "" : "s")));
+			lines.add(Utils.colorize("§eIniciando o jogo"));
+			lines.add(Utils.colorize("§7em §7" + seconds + "§e segundo" + (seconds == 1 ? "" : "s")));
 			lines.add("");
 			
 			board.updateLines(lines);

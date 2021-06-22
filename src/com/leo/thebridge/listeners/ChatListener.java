@@ -20,7 +20,7 @@ public class ChatListener implements Listener{
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event) {
 		if (!gameManager.isPlayerPlaying(event.getPlayer())) return;
-		ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(event.getPlayer().getUniqueId());
+		ActivePlayer activePlayer = gameManager.getActivePlayer(event.getPlayer());
 		
 		StringBuilder builder = new StringBuilder();
 		

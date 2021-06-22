@@ -1,15 +1,10 @@
 package com.leo.thebridge.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.Game;
 import com.leo.thebridge.game.GameManager;
 import com.leo.thebridge.game.GameState;
@@ -36,32 +31,43 @@ public class BasicCommands implements CommandExecutor {
 				return true;
 			}
 			
-		// temporary	
+		// temporary
 		} else if (command.getName().equals("forcestart")) {
-			if (gameManager.isPlayerPlaying(player)) {
-				Game game = gameManager.getGameFromPlayer(player);
-				gameManager.setGameState(game, GameState.STARTING);
+			if (player.hasPermission("thebridge.admin")) {
+				if (gameManager.isPlayerPlaying(player)) {
+					Game game = gameManager.getGameFromPlayer(player);
+					gameManager.setGameState(game, GameState.STARTING);
+					return true;	
+			} else {
+				player.sendMessage(Utils.colorize("§cVocê não tem permissão para utilizar este comando!"));
 				return true;
+			}
+			
 			} else {
 				player.sendMessage(Utils.colorize("§cVocê não está jogando!"));
 				return true;
 			}
 
-		} else if (command.getName().equals("arena")) {
-			World arena = new WorldCreator("boo").createWorld();
-			
-			player.teleport(new Location(arena, 1567, 73, 1261));
-			return true;
-		} else if (command.getName().equals("points")) {
-			ActivePlayer activePlayer = gameManager.getActivePlayerFromUUID(player.getUniqueId());
-			player.sendMessage(Utils.colorize("§eVocê tem §7" + activePlayer.getPoints() + "§e pontos"));
-			return true;
-		} else if (command.getName().equals("state")) {
-			Game game = gameManager.getGameFromPlayer(player); 
-			player.sendMessage("§eGame state is §7" + game.getGameState().toString() + " §8[" + game.getId() + "]");
 		} else if (command.getName().equalsIgnoreCase("location")) {
 			player.sendMessage(player.getLocation().toString());
-		}
+			player.sendMessage(player.getWorld().getName());
+		} else if (command.getName().equals("forcestop")) {
+			if (player.hasPermission("thebridge.admin")) {
+				if (gameManager.isPlayerPlaying(player)) {
+					Game game = gameManager.getGameFromPlayer(player);
+					gameManager.setGameState(game, GameState.FINISHED);
+					return true;	
+			} else {
+				player.sendMessage(Utils.colorize("§cVocê não tem permissão para utilizar este comando!"));
+				return true;
+			}
+			
+			} else {
+				player.sendMessage(Utils.colorize("§cVocê não está jogando!"));
+				return true;
+			}
+
+		} 
 		
 		
 		return false;

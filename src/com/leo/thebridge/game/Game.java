@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -38,7 +39,7 @@ public class Game {
 		this.activePlayers = new ArrayList<ActivePlayer>();
 		this.boards = new HashMap<>();
 		
-		this.virtualArena = new VirtualArena("Boo", schematicFile);
+		this.virtualArena = new VirtualArena("Boo", schematicFile, this.id);
 		this.winner = null;
 		
 		Utils.log("A new game is being created §8[" + id + "]");
@@ -52,7 +53,8 @@ public class Game {
 		
 		player.teleport(this.getVirtualArena().getLocationOne());
 		
-		this.players.add(player);
+		this.players.add(player);		
+				
 		this.activePlayers.add(new ActivePlayer(player, this));
 
 		FastBoard board = new FastBoard(player);
@@ -100,11 +102,17 @@ public class Game {
 		ActivePlayer red = activePlayers.get(0);
 		red.setTeam(Team.RED);
 		red.setSpawnLocation(virtualArena.getLocationOne());
-
+		red.setColor(ChatColor.RED);
+		
 		if (activePlayers.size() == 2) {
 			ActivePlayer blue = activePlayers.get(1);
 			blue.setTeam(Team.BLUE);
 			blue.setSpawnLocation(virtualArena.getLocationTwo());
+			red.setColor(ChatColor.BLUE);
+			
+			red.setEnemy(blue);
+			blue.setEnemy(red);
+			
 		} 
 		
 	}
@@ -207,14 +215,14 @@ public class Game {
 		return this.players
 				.stream()
 				.filter(player -> {
-					return activePlayer.getUUID() == player.getUniqueId();
+					return activePlayer.getUuid() == player.getUniqueId();
 				}).findFirst().get();
 	}
 	public ActivePlayer getActivePlayerFromPlayer(Player player) {
 		return this.activePlayers
 				.stream()
 				.filter(active -> {
-					return active.getUUID() == player.getUniqueId(); 
+					return active.getUuid() == player.getUniqueId(); 
 					})
 				.findFirst()
 				.get();

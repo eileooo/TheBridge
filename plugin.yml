@@ -7,12 +7,10 @@ commands:
   entrar:
     description: Join to a game.
   forcestart:
-    description: Force start.
-  arena:
-    description: debug purpouses.
-  points:
-    description: check how many points you did.
-  state: 
-    description: debug pourpouses, check game state.
+    description: Force start the game.
+    permission: thebridge.admin
+  forcestop:
+    description: Force stop the game.
+    permission: thebridge.admin
   location: 
     description: debug pourpouses, get your location.

@@ -31,8 +31,8 @@ for (FastBoard board : game.getBoards().values()) {
 			
 			ArrayList<String> lines = new ArrayList<>();
 			lines.add("");
-			lines.add(Utils.colorize("§fO servidor será resetado em "));
-			lines.add(Utils.colorize("§7" + timer + "§e segundo" + (timer == 1 ? "" : "s")));
+			lines.add(Utils.colorize("§eResetando mapa"));
+			lines.add(Utils.colorize("§eem §7" + timer + "§e segundo" + (timer == 1 ? "" : "s")));
 			lines.add("");
 			
 			board.updateLines(lines);
