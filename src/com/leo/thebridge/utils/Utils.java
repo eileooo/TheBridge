@@ -12,19 +12,19 @@ public class Utils {
 	public static String colorize(String message) {
 		return ChatColor.translateAlternateColorCodes('§', message);
 	}
-	
+
 	public static String getRandomID() {
 		Random random = new Random();
 		int number = random.nextInt(999) + 100;
-		return "b" + number;
+		return "m" + number;
 	}
-	
+
 	public static void log(String message) {
-		Bukkit.getConsoleSender().sendMessage(colorize("§e[TheBridge] " + message));
+		Bukkit.getConsoleSender().sendMessage(colorize("§7[TheBridge] " + message));
 	}
-	
+
 	public static String getTag(Team team) {
-		switch(team) {
+		switch (team) {
 		case BLUE:
 			return getColor(team) + "[Azul]";
 		case RED:
@@ -33,7 +33,7 @@ public class Utils {
 			return "";
 		}
 	}
-	
+
 	// use method directly from activeplayer object.
 	private static ChatColor getColor(Team team) {
 		switch (team) {
@@ -44,5 +44,5 @@ public class Utils {
 		default:
 			return ChatColor.WHITE;
 		}
-	} 
+	}
 }

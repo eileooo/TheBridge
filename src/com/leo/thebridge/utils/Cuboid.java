@@ -79,6 +79,18 @@ public class Cuboid {
     }
     return bL;
   }
+  
+  public List<Block> roofBlockList() {
+	  final List<Block> bL = new ArrayList<>(this.getXWidth() * this.getZWidth());
+	    for (int x = this.xMin; x <= this.xMax; ++x) {
+	      for (int z = this.zMin; z <= this.zMax; ++z) {
+	        final Block b = this.world.getBlockAt(x, this.yMax, z);
+	        bL.add(b);
+	      }
+	    }
+	    return bL;
+	  
+  }
 
   public List<Chunk> chunkList() {
     final List<Chunk> chunks = new ArrayList<>();
@@ -173,7 +185,7 @@ public class Cuboid {
     }
   }
 
-  public void fillWithoutFloor(final Material material) {
+public void fillWithoutFloor(final Material material) {
     for (Block block : this.blockListWithoutFloor()) {
       block.setType(material);
     }
@@ -183,6 +195,12 @@ public class Cuboid {
     for (Block block : this.floorBlockList()) {
       block.setType(material);
     }
+  }
+  
+  public void fillRoof(final Material material) {
+	  for (Block block : this.roofBlockList()) {
+		  block.setType(material);
+	  }
   }
 
   public boolean collidesWith(final Cuboid other) {
@@ -201,4 +219,31 @@ public class Cuboid {
   public static boolean collidesWith(final Cuboid left, final Cuboid right) {
     return left.collidesWith(right);
   }
+  
+	  public int getxMin() {
+		return xMin;
+	}
+	
+	public int getxMax() {
+		return xMax;
+	}
+	
+	public int getyMin() {
+		return yMin;
+	}
+	
+	public int getyMax() {
+		return yMax;
+	}
+	
+	public int getzMax() {
+		return zMax;
+	}
+	
+	public int getzMin() {
+		return zMin;
+	}
+  
+  
+  
 }

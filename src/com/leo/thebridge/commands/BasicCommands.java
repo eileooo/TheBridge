@@ -48,9 +48,6 @@ public class BasicCommands implements CommandExecutor {
 				return true;
 			}
 
-		} else if (command.getName().equalsIgnoreCase("location")) {
-			player.sendMessage(player.getLocation().toString());
-			player.sendMessage(player.getWorld().getName());
 		} else if (command.getName().equals("forcestop")) {
 			if (player.hasPermission("thebridge.admin")) {
 				if (gameManager.isPlayerPlaying(player)) {

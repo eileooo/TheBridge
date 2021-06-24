@@ -18,6 +18,8 @@ public class ActivePlayer {
 	private Team team;
 	private ActivePlayer enemy = null;
 	
+	private ArrowPlayer arrowPlayer;
+	
 	private int deaths = 0;
 	private int kills = 0;
 	private int points = 0;
@@ -31,6 +33,8 @@ public class ActivePlayer {
 		this.player = player;
 		this.name = player.getName();
 		this.game = game;
+		
+		this.arrowPlayer = new ArrowPlayer(this);
 		
 		Utils.log("A new active player is being created, §7" + player.getUniqueId().toString());
 	}
@@ -105,6 +109,10 @@ public class ActivePlayer {
 	
 	public UUID getUuid() {
 		return uuid;
+	}
+	
+	public ArrowPlayer getArrowPlayer() {
+		return arrowPlayer;
 	}
 	
 	

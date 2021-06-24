@@ -14,39 +14,37 @@ import com.leo.thebridge.utils.Utils;
 import com.leo.thebridge.game.ActivePlayer;
 import com.leo.thebridge.game.Game;
 
-public class PortalJoinListener implements Listener{
-	
+public class PortalJoinListener implements Listener {
+
 	private GameManager gameManager;
-	
+
 	public PortalJoinListener(GameManager gameManager) {
 		this.gameManager = gameManager;
 	}
-	
+
 	@EventHandler
 	public void onPortal(PlayerPortalEvent event) {
-		if (!gameManager.isPlayerPlaying(event.getPlayer())) return;
-		
-		//todo: check if game is active
+		if (!gameManager.isPlayerPlaying(event.getPlayer()))
+			return;
+
+		// todo: check if game is active
 		if (event.getCause() == TeleportCause.END_PORTAL) {
 			event.setCancelled(true);
-			
-			ActivePlayer activePlayer = gameManager.getActivePlayer(event.getPlayer());
-			Game game = activePlayer.getGame();
-			gameManager.scorePoint(game, activePlayer);
-			
+
 		}
 	}
 
-	@EventHandler 
+	@EventHandler
 	public void onMove(PlayerMoveEvent event) {
-		if (!gameManager.isPlayerPlaying(event.getPlayer())) return;
+		if (!gameManager.isPlayerPlaying(event.getPlayer()))
+			return;
 		ActivePlayer activePlayer = gameManager.getActivePlayer(event.getPlayer());
 		Game game = activePlayer.getGame();
-		
+
 		Player player = event.getPlayer();
-		VirtualArena arena =game.getVirtualArena();
+		VirtualArena arena = game.getVirtualArena();
 		Team team = activePlayer.getTeam();
-		
+
 		if (arena.getRedPortal().isIn(event.getPlayer())) {
 			if (team == Team.RED) {
 				game.teleportPlayerToRespectiveSpot(player, activePlayer);
@@ -55,9 +53,9 @@ public class PortalJoinListener implements Listener{
 			} else {
 				gameManager.scorePoint(game, activePlayer);
 				return;
-			} 
-		} 
-		
+			}
+		}
+
 		if (arena.getBluePortal().isIn(event.getPlayer())) {
 			if (team == Team.BLUE) {
 				game.teleportPlayerToRespectiveSpot(player, activePlayer);
@@ -66,9 +64,9 @@ public class PortalJoinListener implements Listener{
 			} else {
 				gameManager.scorePoint(game, activePlayer);
 				return;
-			} 
-		} 
-		
+			}
+		}
+
 	}
-	
+
 }

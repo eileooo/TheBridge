@@ -12,5 +12,3 @@ commands:
   forcestop:
     description: Force stop the game.
     permission: thebridge.admin
-  location: 
-    description: debug pourpouses, get your location.

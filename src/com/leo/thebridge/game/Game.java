@@ -7,26 +7,35 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.leo.thebridge.scoreboard.FastBoard;
+import com.leo.thebridge.utils.ItemBuilder;
 import com.leo.thebridge.utils.Utils;
 
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import org.bukkit.inventory.PlayerInventory;
 
 public class Game {
 
 	private List<Player> players;
 	private List<ActivePlayer> activePlayers;
+	
 	private String id;
 	public GameState gameState;
 	
 	private VirtualArena virtualArena;
 	
-	private int round = 1;
+	private boolean waitingNextRound = false;
+	private int nextRoundTimer = 3;
 	private ActivePlayer winner;
 	
 	private HashMap<Player, FastBoard> boards;
@@ -45,24 +54,25 @@ public class Game {
 		Utils.log("A new game is being created §8[" + id + "]");
 	}
 	
-	
-	
 	public void addPlayer(Player player) {
 		
 		player.getInventory().clear();
 		
-		player.teleport(this.getVirtualArena().getLocationOne());
-		
 		this.players.add(player);		
 				
-		this.activePlayers.add(new ActivePlayer(player, this));
-
+		ActivePlayer activePlayer = new ActivePlayer(player, this);
+		
+		this.activePlayers.add(activePlayer);
+		
 		FastBoard board = new FastBoard(player);
 		
 		board.updateTitle("§e§lThe Bridge");
 		board.updateLines(Arrays.asList("", "§cAguardando...", ""));
 		
 		this.boards.put(player,  board);
+		
+		player.getInventory().clear();
+		player.teleport(this.getVirtualArena().getLocationOne());
 		
 		broadcast(Utils.colorize("§7" + player.getName() + " §eentrou na partida. §7(" + getPlayersCount() + "/2)"));
 		
@@ -104,7 +114,7 @@ public class Game {
 		red.setSpawnLocation(virtualArena.getLocationOne());
 		red.setColor(ChatColor.RED);
 		
-		if (activePlayers.size() == 2) {
+		if (activePlayers.size() > 1) {
 			ActivePlayer blue = activePlayers.get(1);
 			blue.setTeam(Team.BLUE);
 			blue.setSpawnLocation(virtualArena.getLocationTwo());
@@ -112,9 +122,58 @@ public class Game {
 			
 			red.setEnemy(blue);
 			blue.setEnemy(red);
-			
 		} 
 		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void giveItems(ActivePlayer player) {
+		Team team = player.getTeam();
+		Player bukkitPlayer = player.getPlayer();
+		
+		PlayerInventory inventory = bukkitPlayer.getInventory();
+		inventory.clear();
+		
+		Color color;
+		byte clayColor;
+		
+		if (team == Team.RED) {
+			color = Color.RED;
+			clayColor = DyeColor.RED.getData();
+		} else {
+			color = Color.BLUE;
+			clayColor = DyeColor.BLUE.getData();
+		}
+		
+		ItemStack sword = new ItemStack(Material.IRON_SWORD);
+		ItemStack bow = new ItemStack(Material.BOW);
+		ItemStack pickaxe = new ItemBuilder(Material.DIAMOND_PICKAXE).addEnchant(Enchantment.DIG_SPEED, 4).toItemStack();
+		
+		ItemStack clay = new ItemBuilder(Material.STAINED_CLAY, 64, clayColor).toItemStack();
+		ItemStack apple = new ItemStack(Material.GOLDEN_APPLE, 8);
+		ItemStack helmet = new ItemBuilder(Material.LEATHER_HELMET).setLeatherArmorColor(color).toItemStack();
+		ItemStack chestplate = new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherArmorColor(color).toItemStack();
+		ItemStack leggings = new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherArmorColor(color).toItemStack();
+		ItemStack boots = new ItemBuilder(Material.LEATHER_BOOTS).setLeatherArmorColor(color).toItemStack();
+		
+		ItemStack arrow = new ItemStack(Material.ARROW);
+		
+		List<ItemStack> items = Arrays.asList(sword, bow, pickaxe, clay, clay, apple);
+		
+		items.forEach(inventory::addItem);
+		inventory.setItem(8, arrow);
+		
+		inventory.setHelmet(helmet);
+		inventory.setChestplate(chestplate);
+		inventory.setLeggings(leggings);
+		inventory.setBoots(boots);
+	}
+	
+	public void giveItems() {
+		giveItems(activePlayers.get(0));
+		if (activePlayers.size() > 1) {
+			giveItems(activePlayers.get(1));	
+		}
 	}
 	
 	public void setWinner(ActivePlayer winner) {
@@ -140,6 +199,8 @@ public class Game {
 	@SuppressWarnings("deprecation")
 	public void sendTitle(String title, String subTitle) {
 		players.forEach(player -> player.sendTitle(title, subTitle));
+		
+		
 	}
 	
 	public void playSound(Sound sound) {
@@ -151,7 +212,8 @@ public class Game {
 	
 	public void handlePoint(ActivePlayer player) {
 		player.addPoint();
-		teleportPlayersToSpot();
+		//teleportPlayersToSpot();
+		setWaitingNextRound(true);
 	}
 	
 	public void teleportPlayersToSpot() {
@@ -178,9 +240,6 @@ public class Game {
 	}
 	public VirtualArena getVirtualArena() {
 		return virtualArena;
-	}
-	public int getRound() {		
-		return round;
 	}
 	public List<ActivePlayer> getActivePlayers() {
 		return activePlayers;
@@ -226,6 +285,37 @@ public class Game {
 					})
 				.findFirst()
 				.get();
+	}
+	
+	public boolean isWaitingNextRound() {
+		return this.waitingNextRound;
+	}
+	
+	public int getNextRoundTimer() {
+		return this.nextRoundTimer;
+	}
+	
+	public void decreaseNextRoundTimer() {
+		this.nextRoundTimer--;
+	}
+	
+	public void setNextRoundTimer(int seconds) {
+		this.nextRoundTimer = seconds;
+	}
+	
+	public void setWaitingNextRound(boolean waiting) {
+		
+		if (waiting) {
+			this.getVirtualArena().fillCages();
+			this.teleportPlayersToSpot();
+			this.giveItems();
+			this.setNextRoundTimer(3);
+		} else {
+			this.getVirtualArena().removeCages();
+			this.setNextRoundTimer(3);
+		}
+		
+		waitingNextRound = waiting;
 	}
 		
 }
