@@ -1,3 +1,3 @@
 # The Bridge
 
-Plugin simples de The Bridge.
+Basically The Bridge.
